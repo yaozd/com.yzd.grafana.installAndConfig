@@ -7,6 +7,7 @@ grafana版本：grafana-5.1.4-1.x86_64.rpm （百度云有备份）
 cat /etc/centos-release
 2.whereis grafana (查看grafana命令目录，确认本地是否已安装grafana)
 3.mkdir /usr/grafana
+// (但wget一般下太慢，可以直接从百度云下载)
 4.wget https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-5.1.4-1.x86_64.rpm
 5.yum localinstall grafana-5.1.4-1.x86_64.rpm
 6.systemctl start grafana-server
