@@ -1,0 +1,27 @@
+
+https://www.linuxdaxue.com/influxdb-study-series-manual.html
+
+本文属于《InfluxDB系列教程》文章系列，该系列共包括以下 18 部分：
+InfluxDB系列学习教程目录
+InfluxDB学习之InfluxDB的安装和简介
+InfluxDB学习之InfluxDB的基本概念
+InfluxDB学习之InfluxDB的基本操作
+InfluxDB学习之InfluxDB的HTTP API写入操作
+InfluxDB学习之InfluxDB数据保留策略（Retention Policies）
+InfluxDB学习之InfluxDB连续查询（Continuous Queries）
+InfluxDB学习之InfluxDB的HTTP API查询操作
+InfluxDB学习之InfluxDB的关键概念
+InfluxDB学习之InfluxDB常用函数（一）聚合类函数
+InfluxDB学习之InfluxDB常用函数（二）选择类函数
+InfluxDB学习之InfluxDB常用函数（三）变换类函数
+InfluxDB学习之再说连续查询
+Influxdb原理详解
+InfluxDB安装后web页面无法访问的解决方案
+InfluxDB数据备份和恢复方法，支持本地和远程备份
+InfluxDB执行语句管理(query management)
+InfluxDB在windows下的安装和配置
+系列详情请看：《InfluxDB系列教程》:
+InfluxDB是一个当下比较流行的时序数据库，InfluxDB使用 Go 语言编写，无需外部依赖，安装配置非常方便，适合构建大型分布式系统的监控系统。
+本系列是InfluxDB的教程系列。
+InfluxDB技术交流群：580487672
+InfluxDB技术交流论坛：//bbs.linuxdaxue.com/forum-influxdb-1.html
