@@ -93,3 +93,10 @@ InfluxDB是一个开源的没有外部依赖的时间序列数据库。适用于记录度量，事件及执行分析
 安装和管理简单，数据输入和输出速度快
 它旨在实时响应查询。这意味着point数据写入即被索引并立即可供响应时间应小于100ms的查询使用
 ```
+## 05：InfluxDB可视化工具
+```
+同时也包括InfluxDB的sql语句详解，推荐使用-byArvin2018-08-27
+InfluxDBStudio
+https://github.com/CymaticLabs/InfluxDBStudio
+https://github.com/yaozd/InfluxDBStudio
+```
