@@ -100,3 +100,11 @@ InfluxDBStudio
 https://github.com/CymaticLabs/InfluxDBStudio
 https://github.com/yaozd/InfluxDBStudio
 ```
+## 06：InfluxDB常见问题-很重要详读
+```
+时序数据库InfluxDB
+http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/
+目录下有备份：
+com.yzd.grafana.installAndConfig\reference
+
+```

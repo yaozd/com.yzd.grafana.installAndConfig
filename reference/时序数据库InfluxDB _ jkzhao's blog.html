@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<!-- saved from url=(0089)http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/ -->
+<html class="theme-next pisces use-motion"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/jquery.fancybox.css" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/css" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<link href="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/main.css" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="InfluxDB,">
+
+
+
+
+
+  <link rel="alternate" href="http://jkzhao.github.io/atom.xml" title="jkzhao&#39;s blog" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="http://jkzhao.github.io/images/favicon.ico?v=5.0.1">
+
+
+
+
+
+
+<meta name="description" content="最近帮助公司前端小伙伴处理他们的nginx访问日志，log的数据是半结构化的数据，同时也是典型的时序数据，每一条数据都带有时间戳。于是考虑使用时间序列数据库存储，而不会去使用mysql或是mongodb(zabbix用的是mysql，它在IO上面遇到了瓶颈)。现在时间序列的数据库是有很多的，比如graphite、opentsdb以及新生的influxdb。这次我使用了InfluxDB，在此记录下">
+<meta name="keywords" content="InfluxDB">
+<meta property="og:type" content="article">
+<meta property="og:title" content="时序数据库InfluxDB">
+<meta property="og:url" content="http://yoursite.com/2017/12/15/时序数据库InfluxDB/index.html">
+<meta property="og:site_name" content="jkzhao&#39;s blog">
+<meta property="og:description" content="最近帮助公司前端小伙伴处理他们的nginx访问日志，log的数据是半结构化的数据，同时也是典型的时序数据，每一条数据都带有时间戳。于是考虑使用时间序列数据库存储，而不会去使用mysql或是mongodb(zabbix用的是mysql，它在IO上面遇到了瓶颈)。现在时间序列的数据库是有很多的，比如graphite、opentsdb以及新生的influxdb。这次我使用了InfluxDB，在此记录下">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://raw.githubusercontent.com/jkzhao/MarkdownPictures/master/TimeSeriesDatabases/1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/jkzhao/MarkdownPictures/master/TimeSeriesDatabases/2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/jkzhao/MarkdownPictures/master/TimeSeriesDatabases/3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/jkzhao/MarkdownPictures/master/TimeSeriesDatabases/4.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/jkzhao/MarkdownPictures/master/TimeSeriesDatabases/5.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/jkzhao/MarkdownPictures/master/TimeSeriesDatabases/6.png">
+<meta property="og:updated_time" content="2018-01-10T07:55:24.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="时序数据库InfluxDB">
+<meta name="twitter:description" content="最近帮助公司前端小伙伴处理他们的nginx访问日志，log的数据是半结构化的数据，同时也是典型的时序数据，每一条数据都带有时间戳。于是考虑使用时间序列数据库存储，而不会去使用mysql或是mongodb(zabbix用的是mysql，它在IO上面遇到了瓶颈)。现在时间序列的数据库是有很多的，比如graphite、opentsdb以及新生的influxdb。这次我使用了InfluxDB，在此记录下">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/jkzhao/MarkdownPictures/master/TimeSeriesDatabases/1.png">
+
+
+
+<script src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/embed.dist.js.下载" async=""></script><script async="" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/st.js.下载"></script><script src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/hm.js.下载"></script><script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 6287775856811050000,
+      author: 'Author'
+    }
+  };
+</script>
+
+  <title> 时序数据库InfluxDB | jkzhao's blog </title>
+<style type="text/css">.fancybox-margin{margin-right:17px;}</style></head>
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans"><a href="https://github.com/you"><img style="position: absolute; top: 0; right: 0; border: 0;" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?c179eb46ac47d3b4b1b9203b82ee5821";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <a href="https://github.com/jkzhao"><img style="position: absolute; top: 0; right: 0; border: 0;" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="http://jkzhao.github.io/" class="brand" rel="start" style="opacity: 1;">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title" style="opacity: 1; top: 0px;">jkzhao's blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle" style="opacity: 1; top: 0px;">学习 总结 思考</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home" style="opacity: 1; transform: translateY(0px);">
+          <a href="http://jkzhao.github.io/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories" style="opacity: 1; transform: translateY(0px);">
+          <a href="http://jkzhao.github.io/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives" style="opacity: 1; transform: translateY(0px);">
+          <a href="http://jkzhao.github.io/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags" style="opacity: 1; transform: translateY(0px);">
+          <a href="http://jkzhao.github.io/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about" style="opacity: 1; transform: translateY(0px);">
+          <a href="http://jkzhao.github.io/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-guestbook" style="opacity: 1; transform: translateY(0px);">
+          <a href="http://jkzhao.github.io/guestbook" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            留言
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search" style="opacity: 1; transform: translateY(0px);">
+          
+            <a href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input">
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'CziK4aDdRyzFJrfygnHH','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article" style="opacity: 1; display: block; transform: translateY(0px);">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                时序数据库InfluxDB
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-12-15T22:00:36+08:00" content="2017-12-15">
+              2017-12-15
+            </time>
+            
+              <span class="post-updated">
+              &nbsp; | &nbsp; 更新于
+              <time itemprop="dateUpdated" datetime="2018-01-10T15:55:24+08:00" content="2018-01-10">
+              2018-01-10
+              </time>
+              </span>
+            
+          </span>
+
+          
+            <span class="post-category">
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope="" itemtype="https://schema.org/Thing">
+                  <a href="http://jkzhao.github.io/categories/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index">
+                    <span itemprop="name">时序数据库</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+             <span id="/2017/12/15/时序数据库InfluxDB/" class="leancloud_visitors" data-flag-title="时序数据库InfluxDB">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count">255</span>
+              </span>
+          
+
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>最近帮助公司前端小伙伴处理他们的nginx访问日志，log的数据是半结构化的数据，同时也是典型的时序数据，每一条数据都带有时间戳。于是考虑使用时间序列数据库存储，而不会去使用mysql或是mongodb(zabbix用的是mysql，它在IO上面遇到了瓶颈)。现在时间序列的数据库是有很多的，比如graphite、opentsdb以及新生的influxdb。这次我使用了InfluxDB，在此记录下学习过程，同时也希望能够帮助到其他学习的同学。<br><a id="more"></a></p>
+</blockquote>
+<h2 id="InfluxDB介绍"><a href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#InfluxDB%E4%BB%8B%E7%BB%8D" class="headerlink" title="InfluxDB介绍"></a>InfluxDB介绍</h2><p>什么是时间序列数据？最简单的定义就是数据格式里包含timestamp字段的数据。比如股票市场的价格，环境中的温度，主机的CPU使用率等。但是又有什么数据是不包含timestamp的呢？几乎所有的数据都可以打上一个timestamp字段。时间序列数据更重要的一个属性是如何去查询它。在查询的时候，对于时间序列我们总是会带上一个时间范围去过滤数据。同时查询的结果里也总是会包含timestamp字段。<br>InfluxDB 是一个开源分布式时序、事件和指标数据库。使用 Go 语言编写，无需外部依赖。其设计目标是实现分布式和水平伸缩扩展。<br>它有三大特性：</p>
+<ol>
+<li>Time Series （时间序列）：你可以使用与时间有关的相关函数（如最大，最小，求和等）</li>
+<li>Metrics（度量）：你可以实时对大量数据进行计算</li>
+<li>Eevents（事件）：它支持任意的事件数据<br>特点：</li>
+</ol>
+<ul>
+<li>schemaless(无结构)，可以是任意数量的列</li>
+<li>min, max, sum, count, mean, median 一系列函数，方便统计</li>
+<li>Native HTTP API, 内置http支持，使用http读写</li>
+<li>Powerful Query Language 类似sql</li>
+<li>Built-in Explorer 自带web管理界面。（从1.4版本开始去除了自带的web管理界面）</li>
+</ul>
+<h2 id="安装部署InfluxDB"><a href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2InfluxDB" class="headerlink" title="安装部署InfluxDB"></a>安装部署InfluxDB</h2><p><strong>influxdb下载地址：</strong><br><a href="https://portal.influxdata.com/downloads" target="_blank" rel="external">https://portal.influxdata.com/downloads</a><br><strong>influxdb文档：</strong><br><a href="http://docs.influxdata.com/influxdb/v1.4/introduction/getting_started/" target="_blank" rel="external">http://docs.influxdata.com/influxdb/v1.4/introduction/getting_started/</a></p>
+<p><strong>1.下载安装</strong><br>对于在不同操作系统上安装，官网都有说明，我这里使用的是CentOS 7。<br><a href="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/1.png" class="fancybox" rel="group"><img src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/1.png" alt=""></a><br><a href="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/2.png" class="fancybox" rel="group"><img src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/2.png" alt=""></a></p>
+<pre><code>[root@docdesginer local]# wget https://dl.influxdata.com/influxdb/releases/influxdb-1.4.2.x86_64.rpm
+[root@docdesginer local]# yum localinstall influxdb-1.4.2.x86_64.rpm
+[root@docdesginer local]# rpm -ql influxdb
+/etc/influxdb/influxdb.conf
+/etc/logrotate.d/influxdb
+/usr/bin/influx
+/usr/bin/influx_inspect
+/usr/bin/influx_stress
+/usr/bin/influx_tsm
+/usr/bin/influxd
+/usr/lib/influxdb/scripts/influxdb.service
+/usr/lib/influxdb/scripts/init.sh
+/usr/share/man/man1/influx.1.gz
+/usr/share/man/man1/influx_inspect.1.gz
+/usr/share/man/man1/influx_stress.1.gz
+/usr/share/man/man1/influx_tsm.1.gz
+/usr/share/man/man1/influxd-backup.1.gz
+/usr/share/man/man1/influxd-config.1.gz
+/usr/share/man/man1/influxd-restore.1.gz
+/usr/share/man/man1/influxd-run.1.gz
+/usr/share/man/man1/influxd-version.1.gz
+/usr/share/man/man1/influxd.1.gz
+/var/lib/influxdb
+/var/log/influxdb
+</code></pre><p><strong>2.启动</strong></p>
+<pre><code>[root@docdesginer local]# systemctl start influxdb 
+[root@docdesginer local]# systemctl status influxdb
+</code></pre><p><strong>3.登录</strong><br>客户端工具：</p>
+<pre><code>[root@docdesginer local]# /usr/bin/influx
+Connected to http://localhost:8086 version 1.4.2
+InfluxDB shell version: 1.4.2
+&gt; 
+</code></pre><p>查看数据库：</p>
+<pre><code>&gt; SHOW DATABASES
+name: databases
+name
+----
+_internal
+&gt;
+</code></pre><p>HTTP API访问：</p>
+<pre><code>[root@docdesginer ~]# curl -G http://localhost:8086/query --data-urlencode "q=SHOW DATABASES"
+{"results":[{"statement_id":0,"series":[{"name":"databases","columns":["name"],"values":[["_internal"]]}]}
+</code></pre><p>此时数据库中还有没有用户，还没开启认证。</p>
+<h2 id="开启认证"><a href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#%E5%BC%80%E5%90%AF%E8%AE%A4%E8%AF%81" class="headerlink" title="开启认证"></a>开启认证</h2><p><strong>1.创建管理员</strong></p>
+<pre><code>[root@docdesginer local]# /usr/bin/influx
+Connected to http://localhost:8086 version 1.4.2
+InfluxDB shell version: 1.4.2
+&gt; CREATE USER root WITH PASSWORD 'wisedu123' WITH ALL PRIVILEGES
+&gt; quit
+</code></pre><p><strong>2.修改配置文件，开启认证</strong><br>By default, authentication is disabled in the configuration file. Enable authentication by setting the auth-enabled option to true in the [http] section of the configuration file:</p>
+<pre><code>[http]  
+  enabled = true  
+  bind-address = ":8086"  
+  auth-enabled = true 
+  log-enabled = true  
+  write-tracing = false  
+  pprof-enabled = false  
+  https-enabled = false  
+  https-certificate = "/etc/ssl/influxdb.pem" 
+</code></pre><p>重启InfluxDB：</p>
+<pre><code>[root@docdesginer ~]# systemctl restart influxdb 
+</code></pre><p><strong>3.再次登录</strong><br>客户端工具连接数据库：</p>
+<pre><code>[root@docdesginer ~]# influx
+Connected to http://localhost:8086 version 1.4.2
+InfluxDB shell version: 1.4.2
+&gt; show databases;
+ERR: unable to parse authentication credentials
+Warning: It is possible this error is due to not setting a database.
+Please set a database with the command "use &lt;database&gt;".
+&gt;
+
+[root@docdesginer ~]# /usr/bin/influx
+Connected to http://localhost:8086 version 1.4.2
+InfluxDB shell version: 1.4.2
+&gt; auth
+username: root
+password: 
+&gt; show databases;
+name: databases
+name
+----
+_internal
+&gt; 
+或者
+[root@docdesginer ~]# /usr/bin/influx -username root -password wisedu123 -precision rfc3339 
+Connected to http://localhost:8086 version 1.4.2
+InfluxDB shell version: 1.4.2
+&gt; show databases;
+name: databases
+name
+----
+_internal
+&gt; 
+</code></pre><p>HTTP API：</p>
+<pre><code>[root@docdesginer ~]# curl -G http://localhost:8086/query --data-urlencode "q=SHOW DATABASES"                  
+{"error":"unable to parse authentication credentials"}
+[root@docdesginer ~]# curl -G http://localhost:8086/query -u root:wisedu123 --data-urlencode "q=SHOW DATABASES"
+{"results":[{"statement_id":0,"series":[{"name":"databases","columns":["name"],"values":[["_internal"]]}]}
+</code></pre><h2 id="InfluxDB概念"><a href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#InfluxDB%E6%A6%82%E5%BF%B5" class="headerlink" title="InfluxDB概念"></a>InfluxDB概念</h2><p><strong>1.influxdb相关名词（可类比关系型数据库）</strong></p>
+<ul>
+<li>database：数据库。</li>
+<li>measurement：数据库中的表。它就是tag，field，time的容器；对于influxDB的measurement来说，field是必须的，并且不能根据field来排序；Tag是可选的，tag可以用来做索引，tag是以字符串的形式存放的。</li>
+<li>points：表里面的一行数据。</li>
+</ul>
+<p><strong>2.influxDB中独有的概念</strong><br>（1）Point由时间戳（time）、数据（field）和标签（tags）组成。</p>
+<ul>
+<li>time：每条数据记录的时间，也是数据库自动生成的主索引；</li>
+<li>fields：各种记录的值；</li>
+<li>tags：各种有索引的属性。</li>
+</ul>
+<p>InfluxDb不需要做schema定义，这意味着你可以随意的添加measurements, tags, and fields at any time。</p>
+<p>（2）series<br>a series is the collection of data that share a retention policy, measurement, and tag set<br>所有在数据库中的数据，都需要通过图表来展示，而这个series表示这个表里面的数据，可以在图表上画成几条线：通过tags排列组合算出来。<br>其实一个series就是一个测点，或者说一条曲线，那么retention policy, measurement, tagset就共同组成了一个定位测点序列的唯一标识。<br>point，就是某个series的同一个时刻的多个field的value，就组成了一个point；其实就是一条曲线上的一个点。</p>
+<p>（3）retention policy<br>保留策略，用于决定要保留多久的数据，保存几个备份，以及集群的策略等。</p>
+<h2 id="InfluxDB基本操作"><a href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#InfluxDB%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C" class="headerlink" title="InfluxDB基本操作"></a>InfluxDB基本操作</h2><p><strong>连接数据库：</strong></p>
+<pre><code>[root@docdesginer ~]# /usr/bin/influx -username root -password wisedu123 -precision rfc3339   
+Connected to http://localhost:8086 version 1.4.2
+InfluxDB shell version: 1.4.2
+&gt; 
+</code></pre><p>这里的-precision参数指定了时间戳的格式为rfc3339，也可以不使用该参数。<br><strong>查看数据库：</strong></p>
+<pre><code>&gt; SHOW DATABASES
+name: databases
+name
+----
+_internal
+&gt;
+</code></pre><p><strong>创建数据库：</strong></p>
+<pre><code>&gt; CREATE DATABASE mydb
+&gt; SHOW DATABASES
+name: databases
+name
+----
+_internal
+mydb
+&gt;
+</code></pre><p><strong>进入数据库：</strong></p>
+<pre><code>&gt; USE mydb
+Using database mydb
+&gt;
+</code></pre><p><strong>插入数据：</strong><br>influxDB存储数据采用的是Line Protocol格式。<br>Line Protocol格式：写入数据库的Point的固定格式。格式如下：</p>
+<pre><code>&lt;measurement&gt;[,&lt;tag-key&gt;=&lt;tag-value&gt;...] &lt;field-key&gt;=&lt;field-value&gt;[,&lt;field2-key&gt;=&lt;field2-value&gt;...] [unix-nano-timestamp]
+</code></pre><p>比如：</p>
+<pre><code>weather,location=us-midwest temperature=82 1465839830100400200
+  |    -------------------- --------------  |
+  |             |             |             |
+  |             |             |             |
++-----------+--------+-+---------+-+---------+
+|measurement|,tag_set| |field_set| |timestamp|
++-----------+--------+-+---------+-+---------+
+</code></pre><p>【注意】：最后的timestamp是 unix时间戳*1000000000 的值，或者使用 %Y-%m-%dT%H:%M:%SZ 这种格式。使用其他格式在插入时会报错。</p>
+<p>示例：</p>
+<pre><code>&gt; INSERT cpu,host=serverA,region=us_west value=0.64
+</code></pre><p>其中：</p>
+<ul>
+<li>cpu是表名</li>
+<li>host=serverA,region=us_west 是tag</li>
+<li>value=0.64是field</li>
+</ul>
+<p>想对此格式有详细的了解参见<a href="https://docs.influxdata.com/influxdb/v1.4/write_protocols/line_protocol_tutorial/" target="_blank" rel="external">官方文档</a></p>
+<p><strong>查询数据：</strong><br>influxDB是支持类sql语句的，具体的查询语法都差不多。</p>
+<pre><code>&gt; select * from cpu
+name: cpu
+time                           host    region  value
+----                           ----    ------  -----
+2017-12-15T13:17:09.660446488Z serverA us_west 0.64
+</code></pre><p>【注意】：InfluxDB集群功能已经不再开源。要想使用集群服务需要购买企业版。开源版和企业版的主要区别就是企业版的InfluxDB支持集群，而开源版不支持，此外企业版提供了先进的备份/恢复功能，而开源版本没有。但InfluxDB单机版性能也足够支撑中小公司的业务了。</p>
+<h2 id="InfluxDB数据保存策略（Retention-Policies）"><a href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#InfluxDB%E6%95%B0%E6%8D%AE%E4%BF%9D%E5%AD%98%E7%AD%96%E7%95%A5%EF%BC%88Retention-Policies%EF%BC%89" class="headerlink" title="InfluxDB数据保存策略（Retention Policies）"></a>InfluxDB数据保存策略（Retention Policies）</h2><p>InfluxDB每秒可以处理成千上万条数据，要将这些数据全部保存下来会占用大量的存储空间，有时我们可能并不需要将所有历史数据进行存储，因此，InfluxDB推出了数据保留策略（Retention Policies），用来让我们自定义数据的保留时间。<br>InfluxDB的数据保留策略（RP） 用来定义数据在InfluxDB中存放的时间，或者定义保存某个期间的数据。<br>一个数据库可以有多个保留策略，但每个策略必须是独一无二的。</p>
+<p><strong>1.查询策略</strong><br>可以通过如下语句查看数据库的现有策略：</p>
+<pre><code>&gt; SHOW RETENTION POLICIES ON mydb
+name    duration shardGroupDuration replicaN default
+----    -------- ------------------ -------- -------
+autogen 0s       168h0m0s           1        true
+&gt; 
+</code></pre><p>【说明】：数据库mydb只有一个策略，各字段的含义如下：</p>
+<ul>
+<li><strong>name：名称，此示例名称为 autogen。当你创建一个数据库的时候，InfluxDB会自动为数据库创建一个名叫 autogen 的策略，这个策略会永久保存数据。你可以重命名这个策略，并且在InfluxDB的配置文件中禁止掉自动创建策略。</strong></li>
+<li>duration：数据保存时间，0代表无限制</li>
+<li>shardGroupDuration：shardGroup的存储时间，shardGroup是InfluxDB的一个基本储存结构。</li>
+<li>replicaN：全称是REPLICATION，副本个数</li>
+<li>default：是否是默认策略。</li>
+</ul>
+<p>这里有两个概念：<br><strong>shard：</strong><br>    shard 在 InfluxDB 中是一个比较重要的概念，它和 retention policy 相关联。每一个存储策略下会存在许多 shard，每一个 shard 存储一个指定时间段内的数据，并且不重复，例如 7点-8点 的数据落入 shard0 中，8点-9点的数据则落入 shard1 中。每一个 shard 都对应一个底层的 tsm 存储引擎，有独立的 cache、wal、tsm file。<br>创建数据库时会自动创建一个默认存储策略，永久保存数据，对应的在此存储策略下的 shard 所保存的数据的时间段为 7 天，也就是上面查询时看到的168h。计算的函数如下：</p>
+<pre><code>func shardGroupDuration(d time.Duration) time.Duration {
+    if d &gt;= 180*24*time.Hour || d == 0 { // 6 months or 0
+        return 7 * 24 * time.Hour
+    } else if d &gt;= 2*24*time.Hour { // 2 days
+        return 1 * 24 * time.Hour
+    }
+    return 1 * time.Hour
+}
+</code></pre><p>如果创建一个新的 retention policy 设置数据的保留时间为 1 天，则单个 shard 所存储数据的时间间隔为 1 小时，超过1个小时的数据会被存放到下一个 shard 中。</p>
+<p><strong>shard group：</strong><br>    shard group是shards的逻辑容器。</p>
+<p><strong>2.创建策略</strong><br>语法：</p>
+<pre><code>CREATE RETENTION POLICY &lt;retention_policy_name&gt; ON &lt;database_name&gt; DURATION &lt;duration&gt; REPLICATION &lt;n&gt; [SHARD DURATION &lt;duration&gt;] [DEFAULT]
+</code></pre><p>其中：SHARD DURATION子句决定了每个shard group存储的时间间隔，在永久存储的策略里这个子句是无效的。这个子句是可选的。shard group duration默认由策略的 duration 决定。</p>
+<table>
+<thead>
+<tr>
+<th>Retention Policy’s DURATION</th>
+<th>Shard Group Duration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt; 2 days</td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>&gt;= 2 days and &lt;= 6 months</td>
+<td>1 day</td>
+</tr>
+<tr>
+<td>&gt; 6 months</td>
+<td>7 days</td>
+</tr>
+</tbody>
+</table>
+<p>示例1：为数据库mydb创建一个策略</p>
+<pre><code>CREATE RETENTION POLICY "one_day_only" ON "mydb" DURATION 1d REPLICATION 1
+</code></pre><p>示例2：为数据库mydb创建一个默认策略。</p>
+<pre><code>CREATE RETENTION POLICY "one_day_only" ON "mydb" DURATION 23h60m REPLICATION 1 DEFAULT
+</code></pre><p><strong>3.修改策略</strong></p>
+<pre><code>ALTER RETENTION POLICY &lt;retention_policy_name&gt; ON &lt;database_name&gt; DURATION &lt;duration&gt; REPLICATION &lt;n&gt; SHARD DURATION &lt;duration&gt; DEFAULT
+</code></pre><p><strong>4.删除策略</strong></p>
+<pre><code>DROP RETENTION POLICY &lt;retention_policy_name&gt; ON &lt;database_name&gt;
+</code></pre><p>【注意】：策略这个关键词“POLICY”在使用是应该大写，小写应该会出错。<br>当一个表使用的策略不是默认策略时，在进行操作时一定要显式的指定策略名称，否则会出现错误。</p>
+<h2 id="Chronograf介绍"><a href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#Chronograf%E4%BB%8B%E7%BB%8D" class="headerlink" title="Chronograf介绍"></a>Chronograf介绍</h2><p>Influxdb在1.3以后版本已经关闭了内置的8086的web管理功能，需要单独的工具来管理。而这个工具就是Chronograf。<br>其实Chronograf是TICK技术栈的一个组成部分。TICK是InfluxdDB公司推出的监控套件，承包指标采集、分析、画图等时序数据库上下游的工作，有点模仿日志分析系统ELK套件的意思。TICK包含：</p>
+<ul>
+<li>T = Telegraf is a plugin-driven server agent for collecting and reporting metrics.</li>
+<li>I = InfluxDB is a time series database built from the ground up to handle high write and query loads.</li>
+<li>C = Chronograf is a graphing and visualization application for performing ad hoc exploration of data.</li>
+<li>K = Kapacitor is a data processing framework proving alerting, anomaly detection and action frameworks.</li>
+</ul>
+<p>也就是说：</p>
+<ul>
+<li>Telegraf：数据采集</li>
+<li>InfluxDB：数据接收和存储</li>
+<li>Chronograf：数据汇总展示，报警等。</li>
+<li>Kapacitor：数据处理，比如监控策略等</li>
+</ul>
+<h2 id="安装Chronograf"><a href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#%E5%AE%89%E8%A3%85Chronograf" class="headerlink" title="安装Chronograf"></a>安装Chronograf</h2><p><strong>1.安装部署</strong><br>下载地址：<a href="https://portal.influxdata.com/downloads" target="_blank" rel="external">https://portal.influxdata.com/downloads</a><br><a href="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/3.png" class="fancybox" rel="group"><img src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/3.png" alt=""></a></p>
+<pre><code>[root@docdesginer local]# wget https://dl.influxdata.com/chronograf/releases/chronograf-1.3.10.0.x86_64.rpm
+[root@docdesginer local]# yum localinstall chronograf-1.3.10.0.x86_64.rpm
+[root@docdesginer local]# rpm -ql chronograf
+/etc/logrotate.d/chronograf
+/usr/bin/chronograf
+/usr/lib/chronograf/scripts/chronograf.service
+/usr/lib/chronograf/scripts/init.sh
+/usr/share/chronograf/canned/apache.json
+/usr/share/chronograf/canned/consul.json
+/usr/share/chronograf/canned/consul_agent.json
+...
+</code></pre><p><strong>2.启动</strong></p>
+<pre><code>[root@docdesginer local]# systemctl start chronograf
+</code></pre><p><strong>3.访问Chronograf</strong><br>浏览器输入<a href="http://ip:8888/" target="_blank" rel="external">http://IP:8888</a><br><a href="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/4.png" class="fancybox" rel="group"><img src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/4.png" alt=""></a></p>
+<p>查询：<br><a href="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/5.png" class="fancybox" rel="group"><img src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/5.png" alt=""></a><br><a href="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/6.png" class="fancybox" rel="group"><img src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/6.png" alt=""></a><br>在查询时，最好数据库名和表名都加上引号。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="http://jkzhao.github.io/tags/InfluxDB/" rel="tag"><i class="fa fa-tag"></i>InfluxDB</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="http://jkzhao.github.io/2017/11/19/nexus%E6%90%AD%E5%BB%BAmaven%E7%A7%81%E6%9C%8D/" rel="next" title="nexus搭建maven私服">
+                <i class="fa fa-chevron-left"></i> nexus搭建maven私服
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="http://jkzhao.github.io/2017/12/20/Python%E6%93%8D%E4%BD%9CInfluxDB/" rel="prev" title="Python操作InfluxDB">
+                Python操作InfluxDB <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8yODkyNi81NDk1"><iframe src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/get-uuid.html" title="livere-uuid" id="livere-uuid" style="display: none;"></iframe></div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar" style="margin-top: 407px; display: block;">
+    <div class="sidebar-inner affix-top">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/avatar.jpg" alt="Zhao Jiankai">
+          <p class="site-author-name" itemprop="name">Zhao Jiankai</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="http://jkzhao.github.io/archives">
+              <span class="site-state-item-count">72</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="http://jkzhao.github.io/categories">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="http://jkzhao.github.io/tags">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="http://jkzhao.github.io/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/jkzhao" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3566507667/profile?rightmod=1&amp;wvr=6&amp;mod=personinfo&amp;is_all=1" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  微博
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.importnew.com/" title="ImportNew" target="_blank">ImportNew</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc" style="max-height: 794px; width: calc(100% + 17px);">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#InfluxDB%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">InfluxDB介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2InfluxDB"><span class="nav-number">2.</span> <span class="nav-text">安装部署InfluxDB</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#%E5%BC%80%E5%90%AF%E8%AE%A4%E8%AF%81"><span class="nav-number">3.</span> <span class="nav-text">开启认证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#InfluxDB%E6%A6%82%E5%BF%B5"><span class="nav-number">4.</span> <span class="nav-text">InfluxDB概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#InfluxDB%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="nav-number">5.</span> <span class="nav-text">InfluxDB基本操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#InfluxDB%E6%95%B0%E6%8D%AE%E4%BF%9D%E5%AD%98%E7%AD%96%E7%95%A5%EF%BC%88Retention-Policies%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">InfluxDB数据保存策略（Retention Policies）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#Chronograf%E4%BB%8B%E7%BB%8D"><span class="nav-number">7.</span> <span class="nav-text">Chronograf介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/#%E5%AE%89%E8%A3%85Chronograf"><span class="nav-number">8.</span> <span class="nav-text">安装Chronograf</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async="" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/busuanzi.pure.mini.js.下载"></script>
+<div class="copyright">
+  
+  © 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhao Jiankai</span>
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv" style="display: inline;">
+  本站访客数:<span id="busuanzi_value_site_uv">4848</span>
+</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io/">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共198.8k字</span>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/index.js.下载"></script>
+
+  
+  <script type="text/javascript" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/fastclick.min.js.下载"></script>
+
+  
+  <script type="text/javascript" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/jquery.lazyload.js.下载"></script>
+
+  
+  <script type="text/javascript" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/velocity.min.js.下载"></script>
+
+  
+  <script type="text/javascript" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/velocity.ui.min.js.下载"></script>
+
+  
+  <script type="text/javascript" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/jquery.fancybox.pack.js.下载"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/utils.js.下载"></script>
+
+  <script type="text/javascript" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/motion.js.下载"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/affix.js.下载"></script>
+
+  <script type="text/javascript" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/pisces.js.下载"></script>
+
+
+
+  
+  <script type="text/javascript" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/scrollspy.js.下载"></script>
+<script type="text/javascript" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/post-details.js.下载"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/bootstrap.js.下载"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+  
+  
+  
+
+  
+
+  
+  <script src="./时序数据库InfluxDB _ jkzhao&#39;s blog_files/av-core-mini-0.6.1.js.下载"></script>
+  <script>AV.initialize("r9OTvh5qdm5WfVnhJBm4XoP9-gzGzoHsz", "VAES8qziiwbdUq0IzdQVj5xD");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+<!--    -->
+
+
+</body></html>
