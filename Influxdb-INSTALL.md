@@ -64,6 +64,12 @@ InfluxDB 权限验证相关
 https://blog.csdn.net/vblegend_2013/article/details/80904845
 
 ```
+## 02：influxdb使用的端口如下
+```
+8083: Web admin管理服务的端口, http://localhost:8083
+8086: HTTP API的端口
+8088: 集群端口(目前还不是很清楚, 配置在全局的bind-address，默认不配置就是开启的)
+```
 ## 02：InfluxDB是否收费
 ```
 InfluxDB的Cluster功能收费，单机功能免费使用。
@@ -83,6 +89,10 @@ https://zhidao.baidu.com/question/458141350483851565.html
 ```
 ## 04：InfluxDB介绍
 ```
+influxdb的简单使用
+http://www.361way.com/influxdb-user/5291.html
+时序数据库InfluxDB
+http://jkzhao.github.io/2017/12/15/%E6%97%B6%E5%BA%8F%E6%95%B0%E6%8D%AE%E5%BA%93InfluxDB/
 InfluxDB
 一个开源的时间序列数据库
 InfluxDB是一个开源的没有外部依赖的时间序列数据库。适用于记录度量，事件及执行分析。
