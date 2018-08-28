@@ -43,3 +43,14 @@ curl -X PUT -H "Content-Type: application/json" -d '{
 }' http://admin:admin@<your_grafana_host>:3000/api/user/password
 
 ```
+### 03:grafana的管理员只是在第一次启动时设置一次，之后无法再进行设置
+```
+https://www.cnblogs.com/java-zhao/p/5923455.html
+注意：grafana的管理员只是在第一次启动时设置一次，之后无法再进行设置 。
+
+所以，上边的admin_user=zhaojigang admin_password=zhaojigang如果不是第一次启动之前设置的，那么就是不起作用的
+
+https://github.com/grafana/grafana/issues/6156
+
+或者：参考：https://my.oschina.net/guol/blog/515126
+```
