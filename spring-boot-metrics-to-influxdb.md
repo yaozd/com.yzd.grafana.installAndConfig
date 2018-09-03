@@ -76,3 +76,71 @@ counter.*：
 
 结合其它一些工具把这些信息采集到grafana里，就有得到一系列很实用的监控图表数据，比如：　　
 ```
+4.[使用JConsole监控进程、线程、内存、cpu、类情况](http://www.51testing.com/html/95/115295-804841.html)
+```
+使用JConsole监控进程、线程、内存、cpu、类情况
+http://www.51testing.com/html/95/115295-804841.html
+===
+Heap and Non-heap内存
+
+JVM管理两种内存：heap和non-heap内存，两种内存都是在JVM启动时建立。
+
+Heap memory是运行时数据区域，用于JVM为所有对象实例和队列分配的内存。Heap可能为固定植或者可变值。垃圾收集器是一个用于回收对象占用的heap内存的自动化内存管理系统。
+
+Non-heap memory 包含一个在所有线程共享的方法区域（method area）和内部进程或JVM优化所需的内存。它存储了每一个类的结构，比如运行常量池，字段和方法数据，构造函数和方法的代码。方法区域逻辑上是 heap的一部分，但是依赖于实现，JVM可能不进行垃圾收集或压缩。像heap一样，方法区域可能为固定或可变大小。方法区域所需要的内存没有必要是连 续的。
+
+除了方法区域之外，一个JVM实现的内部进程或优化所需的内存也属于non-heap内存。比如JIT编译器为了提高性能而用于存储本地机器码所需的内存。
+===
+lUsed：当前使用的内存总量。使用的内存总量是指所有的对象占用的内存，包括可达和不可达的对象。
+
+lCommitted：JVM可使用的内存量。Committed内存数量可能随时间变化而变化。JAVA虚拟机可能将某些内存释放，还给操作系统，committed内存可能比启动时初始分配的内存量要少。Committed内存总是大于等于used内存。
+===
+Summary
+
+Uptime：JVM已运行时长。
+
+Total compile time：花费在即时编译（JIT compilation）中的时间。
+
+Process CPU time：JVM花费的总CPU时间。
+
+Threads
+
+Live threads：当前活动的daemon线程加non-daemon线程数量。
+
+Peak：自JVM启动后，活动线程峰值。
+
+Daemon threads：当前活动的Daemon线程数量。
+
+Total started：自JVM启动后，启动的线程总量（包括daemon,non-daemon和终止了的）
+
+Memory
+
+Current heap size：堆（heap）占用的内存量，以K为单位。
+
+Committed memory：为堆分配的内存总量
+
+Maximum heap size：堆占用的最大内存量。
+
+Objects pending for finalization：等待析构（finalization）的对象数量。
+
+Garbage collector information：GC信息，摆阔垃圾回收器名称，已执行的垃圾回收次数和执行垃圾回收总耗时。
+
+Classes
+
+Current classes loaded：当前被加载到内存的classes数量
+
+Total classes loaded：自JVM启动后被加载到内存的classes总量，包括后来卸载的。
+
+Total classes unloaded：自JVM启动后，从内存卸载的classes总量。
+
+Operating System：
+
+Total physical memory：物理内存总量
+
+Free physical memory：物理内存空闲量
+
+Committed virtual memory：为运行中的进程分配的虚拟内存总量
+
+监视内存消耗：
+Memory选项卡提供了内存消耗和内存池信息。
+```
