@@ -56,6 +56,28 @@ https://github.com/JupiterMouse/gasmiddleware
 https://github.com/yaozd/gasmiddleware（备份）
 
 ```
+3.[spring-boot-starter-actuator自定义配置说明](https://blog.csdn.net/yangliuhbhd/article/details/80655847)
+```
+#关闭metrics功能
+endpoints.metrics.enabled=false
+#开启shutdown远程关闭功能
+endpoints.shutdown.enabled=true
+#设置beansId
+endpoints.beans.id=mybean
+#设置beans路径
+endpoints.beans.path=/bean
+#关闭beans 功能
+endpoints.beans.enabled=false
+#关闭所有的
+endpoints.enabled=false 
+#开启单个beans功能
+endpoints.beans.enabled=true
+#所有访问添加根目录
+management.context-path=/manage
+?
+management.port=8181
+?
+```
 3.spring boot 1.x的各项运行指标说明
 ```
 spring-boot 速成(3) actuator
