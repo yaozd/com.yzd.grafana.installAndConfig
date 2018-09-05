@@ -6,6 +6,22 @@
 5. [Using InfluxDB in Grafana,influxDB在grafana中使用](https://www.cnblogs.com/michellexiaoqi/p/7271880.html)
 6. [influxDB---Data Exploration](https://www.cnblogs.com/michellexiaoqi/p/7297489.html)
 7. [influxDB---数据库操作SQL](https://www.cnblogs.com/michellexiaoqi/p/7338913.html)
+
+### Influxdb常用统计语句
+```
+来自：spring-boot-metrics-to-influxdb的dev-yzd分支
+https://github.com/yaozd/spring-boot-metrics-to-influxdb.git
+1.heap的统计：
+SELECT mean("heap") FROM "microservice_status" WHERE ("serviceId" =~ /^$app$/) AND $timeFilter GROUP BY time($interval) fill(null)
+2.heap.used的统计：
+SELECT mean("heap.used") FROM "microservice_status" WHERE ("serviceId" =~ /^$app$/) AND $timeFilter GROUP BY time($interval) fill(null)
+3.young.gc.count(30s)的统计（spring boot中只提供了GC收集的总次数）：
+SELECT LAST("young.gc.count") -FIRST("young.gc.count") FROM "microservice_status" WHERE ("serviceId" =~ /^$app$/) and time > now() - 1h GROUP BY time(30s) fill(null)
+4.young.gc.time(30s)的统计（spring boot中只提供了GC收集的总时间）：
+SELECT LAST("young.gc.time") -FIRST("young.gc.time") FROM "microservice_status" WHERE ("serviceId" =~ /^$app$/) and time > now() - 1h GROUP BY time(30s) fill(null)
+
+```
+
 ```
 随笔分类 - influxDB
 influxDB---数据库操作SQL

@@ -37,6 +37,17 @@
 
 参考：[—深入浅出Java垃圾回收机制](http://www.importnew.com/1993.html)
 
+## spring boot 1.x 垃圾回收GC指标信息(总的时间或总的次数)
+```
+gc.*：
+    垃圾收集器的详细信息，包括
+    垃圾回收次数gc.ps_scavenge.count、（总的次数）
+    垃圾回收消耗时间gc.ps_scavenge.time、（总的时间）
+    标记-清除算法的次数gc.ps_marksweep.count、（总的次数）
+    标记-清除算法的消耗时间gc.ps_marksweep.time（总的时间）
+    这些数据均来自java.lang.management.GarbageCollectorMXBean。
+    
+```
 
 ## Collect the metric spring-actuator and send them to the InfluxDB
 1.[spring-boot-metrics-to-influxdb](https://github.com/ypvillazon/spring-boot-metrics-to-influxdb)
